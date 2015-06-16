@@ -3,7 +3,7 @@
     "description": "test for muzik air",
     "type": "test",
     "require": {
-        "phpunit/phpunit-selenium": "dev-master"
+        "phpunit/phpunit-selenium": "*"
     },
     "license": "MIT",
     "authors": [

@@ -47,6 +47,7 @@ class AirMuzikTest extends AirMuzikComponent {
 
 	protected function setUp() {
 
+		parent::elementSetup();
 		$this->setBrowserUrl($this->websiteUrl);
 	}
 

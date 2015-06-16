@@ -3,9 +3,11 @@
 class AirMuzikComponent extends PHPUnit_Extensions_Selenium2TestCase {
 
 	protected $trackAmountFlag;
+	protected $checklogin;
 
 	public function elementSetup() {
 		$this->trackAmountFlag = "true";
+		$this->checklogin = "false";
 	}
 
 	public function wait($second) {
@@ -44,9 +46,17 @@ class AirMuzikComponent extends PHPUnit_Extensions_Selenium2TestCase {
 
 			case 'Login':
 
+				sleep(1);
 				$this->byCssSelector('a.login')->click();
 				break;
-			
+
+			case 'Register':
+
+				sleep(1);
+				$this->byCssSelector('a.login')->click();
+				$this->byCssSelector('div.center > a:nth-child(3)')->click();
+				break;
+
 			case 'Logout':
 
 				$this->logout();
@@ -69,7 +79,7 @@ class AirMuzikComponent extends PHPUnit_Extensions_Selenium2TestCase {
 	}
 //comment assert checklogin
 	public function trackProfile($option) {
-		$text = 'test comment';
+		$text = 'test comment 3';
 		$select = 2;
 		switch ($option) {
 
@@ -99,7 +109,8 @@ class AirMuzikComponent extends PHPUnit_Extensions_Selenium2TestCase {
 				break;
 
 			case 'comment':
-				//assert check to login for using commentpost
+
+				$this->assertEquals('true', $this->checklogin, "member does not login, can't post a comment");
 				$this->commentPost($text);
 				break;
 
@@ -280,12 +291,86 @@ class AirMuzikComponent extends PHPUnit_Extensions_Selenium2TestCase {
 		$this->byName('password')->value($password);
 		$this->wait(1);
 		$this->byCssSelector('button.submit-circle.button-primary')->click();
+
+		if(!empty($this->cookie()->get('air_member'))){
+			$this->checklogin = "true";
+		}
+	}
+
+	public function memberAccountGenerate() {
+
+        $length = 10;
+        $account = '';
+
+        for($index = 1; $index <= $length; $index++) {
+            $choose = rand(1, 3);
+            if($choose == 1) {
+                $result = chr(rand(97, 122));
+            }
+            if($choose == 2) {
+                $result = chr(rand(65, 90));
+            }
+            if($choose == 3) {
+                $result = rand(0, 9);
+            }
+            $account .= $result;
+        }
+        $account .= "@test.com";
+        return $account;
+
+    }
+
+    public function memberPasswordGenerate() {
+
+        $length = 10;
+        $password = '';
+        $word = 'abcdefghijkmnpqrstuvwxyzABCDEFGHIJKLMNPQRSTUVWXYZ0123456789';
+        $len = strlen($word);
+
+        for ($index = 0; $index < $length; $index++) {
+            $password .= $word[rand() % $len];
+        }
+
+        return $password;
+    }
+
+	public function register($account, $password) {
+
+		$this->byName('email')->value($account);
+		$this->byName('password')->value($password);
+		$this->byName('password_confirm')->value($password);
+		$this->wait(1);
+		$this->byCssSelector('button.submit.button-primary')->click();
+
+		if(!empty($this->cookie()->get('air_member'))){
+			$this->checklogin = "true";
+		}
+
+	}
+
+	public function memeberNotification() {
+
+		$this->assertEquals($this->checklogin, "true", "member does not login");
+		$this->byCssSelector('a.image.js-member-panel-image')->click();
+		$this->byCssSelector('div.list > ul > li:nth-child(2) > a')->click();
+		
+	}
+
+	public function memberPlaylist() {
+
+		$this->assertEquals($this->checklogin, "true", "member does not login");
+		$this->byCssSelector('a.image.js-member-panel-image')->click();
+		$this->byCssSelector('div.list > ul > li:nth-child(3) > a')->click();
+
 	}
 
 	public function logout() {
 
 		$this->byCssSelector('a.image.js-member-panel-image')->click();
 		$this->byCssSelector('div.list > ul > li:nth-child(4) > a')->click();
+
+		$this->checklogin = "false";
+		$this->cookie()->clear();
 	}
 
 	public function search($keyword) {
@@ -414,7 +499,7 @@ class AirMuzikComponent extends PHPUnit_Extensions_Selenium2TestCase {
 				break;
 		}
 	}
-#to do :1.check member login, select playlist of member
+#to do : select playlist of member
 
 }
 
