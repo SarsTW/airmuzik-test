@@ -8,7 +8,8 @@ class AirMuzikTest extends AirMuzikComponent {
 	protected $searchUrl = 'http://dev.airmuzik.com:5636/tw/search/';
 	protected $loginUrl = 'http://dev.airmuzik.com:5636/tw/member/login';
 	protected $memberUrl = 'http://dev.airmuzik.com:5636/tw/member';
-
+	protected $width = 430;
+	protected $height = 530;
 
 	protected $windows = array(
 		array(
@@ -40,9 +41,9 @@ class AirMuzikTest extends AirMuzikComponent {
 
 ##member account
 
-	public static $member1 = array('account' => 'f56112000@gmail.com', 'password' => 'ss07290420');
+	public static $member1 = array('account' => '', 'password' => '');
 
-	public static $member2 = array('account' => 'gosick@test.com', 'password' => 'gosick');
+	public static $member2 = array('account' => '', 'password' => '');
 
 
 	protected function setUp() {
@@ -52,7 +53,7 @@ class AirMuzikTest extends AirMuzikComponent {
 	}
 
 
-/* ##to do right comment to check status code
+
 	public function testTrackProfile() {
 
 		$this->url($this->websiteUrl);
@@ -109,8 +110,8 @@ class AirMuzikTest extends AirMuzikComponent {
 		$this->assertNotEquals($record_url, $this->url(), "url error! not player page!");
 
 	}
-*/
-/*	
+
+	
 	public function testSearch() {
 		
 		$this->url($this->websiteUrl);
@@ -161,22 +162,193 @@ class AirMuzikTest extends AirMuzikComponent {
 
 		$this->assertNotEquals($record_url, $this->url(), "url error! not player page!");
 	}
-*/
-/*
+
+
 	public function testPlayer() {
 
 		$this->url($this->websiteUrl);
 		parent::menu('HomepageArrow');
 		sleep(3);
-		parent::search('mozart');
+		parent::menu('HomepagePlayList');
 		parent::wait(1);
 
-		$record_url = $this->url();
-	}
-*/
+		$window = $this->windowHandles();
+		$this->windows[0]['id'] = $window[0];
+		$this->windows[1]['id'] = $window[1];
 
-	
-/*
+		$this->currentWindow = $this->windows[1]['id'];
+
+		#switch to festival page
+		$this->window($this->currentWindow);
+		parent::wait(1);
+
+		#go for playing
+		parent::menu('GoforPlaying');
+
+		$window = $this->windowHandles();
+		$this->windows[2]['id'] = $window[2];
+		$this->currentWindow = $this->windows[2]['id'];
+
+		#switch to player window
+		$this->window($this->currentWindow);
+		$record_url = $this->url();
+		sleep(2);
+
+		#click 'add' and check if it goes to member login
+		parent::player('add');
+		$this->assertEquals($this->loginUrl, $this->url(), "url error! not member login page");
+		sleep(2);
+
+		#go to last page
+		$this->url($record_url);
+
+		#click 'composer'
+		$keyword = parent::player('composer');
+		$this->currentWindow = $this->windows[1]['id'];
+		$this->window($this->currentWindow);
+
+		$this->assertEquals($this->searchUrl.$keyword, urldecode($this->url()), "composer url error");
+
+		$this->currentWindow = $this->windows[2]['id'];
+		$this->window($this->currentWindow);
+
+		#click 'track'
+		$keyword = parent::player('track');
+		$this->assertEquals(strpos($this->url(), $keyword), 0, "track url error!");
+
+		$this->url($record_url);
+		
+		#click 'artist'
+		$keyword = parent::player('artist');
+		$this->currentWindow = $this->windows[1]['id'];
+		$this->window($this->currentWindow);
+
+		$this->assertEquals($this->searchUrl.$keyword, urldecode($this->url()), "artist url error");
+
+		$this->currentWindow = $this->windows[2]['id'];
+		$this->window($this->currentWindow);
+
+		#click 'play'
+		parent::player('play');
+		sleep(3);
+
+		#click 'like'
+		parent::player('like');
+		$this->assertEquals($this->loginUrl, $this->url(), "url error! not member login page");
+
+		$this->url($record_url);
+
+		#click 'comment'
+		$keyword = parent::player('comment');
+		$this->currentWindow = $this->windows[1]['id'];
+		$this->window($this->currentWindow);
+		$this->assertEquals(strpos($this->url(), $keyword), 0, "track url error!");
+		
+		#click 'share'
+		$this->currentWindow = $this->windows[2]['id'];
+		$this->window($this->currentWindow);
+		parent::player('share');
+		parent::screenshot( __DIR__.'/report/'.'player_share_click'.'-'.time(). '.png');
+	}
+
+
+	public function testMemberRegisterRWD() {
+
+		$this->url($this->websiteUrl);
+        
+        $window = $this->currentWindow();
+        $window->size(array('width' => $this->width, 'height' => $this->height));
+
+        parent::menu('HomepageArrow');
+
+		parent::menu('Register');
+		sleep(2);
+		$account = parent::memberAccountGenerate();
+		self::$member1['account'] = $account;
+		$password = parent::memberPasswordGenerate();
+		self::$member1['password'] = $password;
+
+		parent::register(self::$member1['account'], self::$member1['password']);
+		
+	}
+
+
+	public function testMemberPlayerRWD() {
+
+		$this->url($this->websiteUrl);
+
+		$window = $this->currentWindow();
+		$window->size(array('width' => $this->width, 'height' => $this->height));
+
+		parent::menu('HomepageArrow');
+
+		parent::menu('Login');
+		sleep(2);
+		parent::login('gosick@test.com','gosick');
+		//parent::login(self::$member1['account'], self::$member1['password']);
+		sleep(2);
+
+		parent::menu('HomepagePlayList');
+		sleep(3);
+
+		$window = $this->windowHandles();
+		$this->windows[0]['id'] = $window[0];
+		$this->windows[1]['id'] = $window[1];
+
+		$this->currentWindow = $this->windows[1]['id'];
+
+		#switch to festival page
+		$this->window($this->currentWindow);
+		parent::wait(1);
+
+		#go for playing
+		parent::menu('GoforPlaying');
+
+		$window = $this->windowHandles();
+		$this->windows[2]['id'] = $window[2];
+		$this->currentWindow = $this->windows[2]['id'];
+
+		#switch to player window
+		$this->window($this->currentWindow);
+		$record_url = $this->url();
+		sleep(2);
+
+		#click 'track'
+		$keyword = parent::playerRWD('track');
+		$this->window($this->windows[1]['id']);
+		$this->assertEquals(strpos($this->url(), $keyword), 0, "track url error!");
+		
+		$this->window($this->window[2]['id']));
+
+		$this->url($record_url);
+
+		#click 'play'
+		parent::playerRWD('play');
+		sleep(4);
+	}
+
+
+	public function testMemberTrackListRWD() {
+
+		$this->url($this->websiteUrl);
+        
+        $window = $this->currentWindow();
+        $window->size(array('width' => $this->width, 'height' => $this->height));
+
+        parent::menu('HomepageArrow');
+
+		parent::menu('Login');
+		sleep(2);
+		parent::login('gosick@test.com', 'gosick');
+		sleep(2);
+
+		parent::memberPlaylist();
+
+		sleep(5);
+	}
+
+
+
 	public function testOtherMember() {
 		
 		$this->url($this->websiteUrl);
@@ -198,10 +370,8 @@ class AirMuzikTest extends AirMuzikComponent {
 		#click 'share' and take a screenshot
 		parent::memberTracksOperation('share');
 		
-		#click ''
-		sleep(10);
 	}
-*/
+
 }
 
 ?>
