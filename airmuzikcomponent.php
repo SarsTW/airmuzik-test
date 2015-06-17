@@ -17,6 +17,7 @@ class AirMuzikComponent extends PHPUnit_Extensions_Selenium2TestCase {
 
 	public function menu($option) {
 
+		$keyword = '';
 		switch ($option) {
 
 			case 'Homepage':
@@ -31,6 +32,7 @@ class AirMuzikComponent extends PHPUnit_Extensions_Selenium2TestCase {
 
 			case 'HomepagePlayList':
 				//festival list
+				$keyword = $this->byCssSelector('li.scenario-list.scenario-list-wide.scenario-list-situation > ul > li:nth-child(1) > a')->attribute('href');
 				$this->byCssSelector('li.scenario-list.scenario-list-wide.scenario-list-situation > ul > li:nth-child(1) > a')->click();
 				break;
 
@@ -39,7 +41,7 @@ class AirMuzikComponent extends PHPUnit_Extensions_Selenium2TestCase {
 				$this->byCssSelector('li.scenario-list.scenario-list-feature > ul > li:nth-child(1) > a')->click();
 			case 'GoforPlaying':
 
-				$this->homepagePlayList($option);
+				$keyword = $this->homepagePlayList($option);
 				break;
 
 			case 'GotoPlayListTrackProfile':
@@ -67,27 +69,34 @@ class AirMuzikComponent extends PHPUnit_Extensions_Selenium2TestCase {
 			default:
 				break;
 		}
+
+		return $keyword;
 	}
 
 	public function homepagePlayList($option) {
 
+		$keyword = '';
 		if($option == 'GoforPlaying') {
 
+			$keyword = $this->byCssSelector('a.play.button-primary')->attribute('href');
 			$this->byCssSelector('a.play.button-primary')->click();
 		}
 		else if($option == 'GotoPlayListTrackProfile') {
 
 			$this->byCssSelector('div.playlist > ul > li:nth-child(1) > a')->click();
 		}
+		return $keyword;
 	}
 
 	public function trackProfile($option) {
 		$text = 'test comment 3';
 		$select = 2;
+		$keyword = '';
 		switch ($option) {
 
 			case 'play':
 
+				$keyword = $this->byCssSelector('div.menu > div > a:nth-child(1)')->attribute('href');
 				$this->byCssSelector('div.menu > div > a:nth-child(1)')->click();
 				break;
 			
@@ -120,6 +129,8 @@ class AirMuzikComponent extends PHPUnit_Extensions_Selenium2TestCase {
 			default:
 				break;
 		}
+
+		return $keyword;
 		
 	}
 
@@ -130,6 +141,7 @@ class AirMuzikComponent extends PHPUnit_Extensions_Selenium2TestCase {
 
 			case 'play':
 
+				$keyword = $this->byCssSelector('div.playlist-table > div:nth-child(1) > div:nth-child(2) > div:nth-child(2) > div:nth-child(1) > a:nth-child(1)')->attribute('href');
 				$this->byCssSelector('div.playlist-table > div:nth-child(1) > div:nth-child(2) > div:nth-child(2) > div:nth-child(1) > a:nth-child(1)')->click();
 				break;
 

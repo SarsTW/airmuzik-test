@@ -69,9 +69,95 @@ class AirMuzikTest extends AirMuzikComponent {
         }
         
     }
+/*
+    public function testTrackProfileVersion2() {
+
+    	$this->url($this->websiteUrl);
+
+    	parent::menu('HomepageArrow');
+    	sleep(2);
+    	$keyword = parent::menu('HomepagePlayList');
+    	sleep(2);
+    	$this->url($keyword);
+
+    	parent::menu('GotoPlayListTrackProfile');
+    	parent::wait(1);
+
+    	$record_url = $this->url();
+    	#click 'like' and check if it goes to member login
+		parent::trackProfile('like');
+		$this->assertEquals($this->loginUrl, $this->url(), "url error! not member login page");
+
+		#go to last page
+		$this->url($record_url);
+
+		#click 'add' and check if it goes to member login
+		parent::trackProfile('add');
+		$this->assertEquals($this->loginUrl, $this->url(), "url error! not member login page");
+		$this->url($record_url);
+
+		#click 'share' and take a screenshot
+		parent::trackProfile('share');
+		parent::screenshot( __DIR__.'/report/'.'trackProfile_share_click'.'-'.time(). '.png');
+		
+		#click 'play' and change the target to 'player'
+		$keyword = parent::trackProfile('play');
+
+		$this->url($keyword);
+		$this->assertNotEquals($record_url, $this->url(), "url error! not player page!");
+
+		$this->url($record_url);
+
+    }
+
+    public function testSearchversion2() {
+
+		$this->url($this->websiteUrl);
+
+		parent::menu('HomepageArrow');
+		sleep(2);
+		parent::search('mozart');
+
+		parent::wait(1);
+		$record_url = $this->url();
+
+		#click 'add' in search result list
+		parent::searchOperation('add');
+		$this->assertEquals($this->url(), $this->loginUrl, "add url error");
+		$this->url($record_url);
+
+		#click 'composer' in search result list
+		$keyword = parent::searchOperation('composer');
+		$this->assertEquals($this->searchUrl.$keyword, urldecode($this->url()), "composer url error");
+		$this->url($record_url);
+
+		#click 'airtist' in search result list
+		$keyword = parent::searchOperation('artist');
+		$this->assertEquals($this->searchUrl.$keyword, urldecode($this->url()), "artist url error");
+		$this->url($record_url);
+
+		#click 'share' and take a screenshot in search result list
+		parent::searchOperation('share');
+		parent::screenshot( __DIR__.'/report/'.'search_share_click'.'-'.time(). '.png');
+
+		#click 'track' in search result list
+		$keyword = parent::searchOperation('track');
+		$this->assertEquals(strpos($this->url(), $keyword), 0, "track url error!");
+		$this->url($record_url);
+
+		#click 'play' in search result list
+		$keyword = parent::searchOperation('play');
+
+		$this->url($keyword);
+		$this->assertNotEquals($record_url, $this->url(), "url error! not player page!");
+
+		$this->url($record_url);
 
 
+	}
 
+*/
+/*
 	public function testTrackProfile() {
 
 		$this->url($this->websiteUrl);
@@ -127,8 +213,9 @@ class AirMuzikTest extends AirMuzikComponent {
 		$this->assertNotEquals($record_url, $this->url(), "url error! not player page!");
 
 	}
-
+*/
 	
+/*	
 	public function testSearch() {
 		
 		$this->url($this->websiteUrl);
@@ -179,8 +266,73 @@ class AirMuzikTest extends AirMuzikComponent {
 
 		$this->assertNotEquals($record_url, $this->url(), "url error! not player page!");
 	}
+*/
+	public function testPlayerVersion2() {
 
+		$this->url($this->websiteUrl);
+		parent::menu('HomepageArrow');
+		sleep(2);
+		$keyword = parent::menu('HomepagePlayList');
+	
+		$this->url($keyword);
 
+		#go for playing
+		$keyword = parent::menu('GoforPlaying');
+		
+		$this->url($keyword);
+		$record_url = $this->url();
+
+		#click 'add' and check if it goes to member login
+		parent::player('add');
+		$this->assertEquals($this->loginUrl, $this->url(), "url error! not member login page");
+		sleep(2);
+
+		#go to last page
+		$this->url($record_url);
+
+		#click 'composer'
+		$keyword = parent::player('composer');
+		$this->url($keyword);
+		$this->assertEquals(strpos($this->url(), $keyword), 0, "composer url error");
+
+		$this->url($record_url);
+
+		#click 'track'
+		$keyword = parent::player('track');
+		$this->url($keyword);
+		$this->assertEquals(strpos($this->url(), $keyword), 0, "track url error!");
+
+		$this->url($record_url);
+		
+		#click 'artist'
+		$keyword = parent::player('artist');
+		$this->url($keyword);
+		$this->assertEquals($this->searchUrl.$keyword, urldecode($this->url()), "artist url error");
+
+		$this->url($record_url);
+
+		#click 'play'
+		parent::player('play');
+		sleep(3);
+
+		#click 'like'
+		parent::player('like');
+		$this->assertEquals($this->loginUrl, $this->url(), "url error! not member login page");
+
+		$this->url($record_url);
+
+		#click 'comment'
+		$keyword = parent::player('comment');
+		$this->url($keyword);
+		$this->assertEquals(strpos($this->url(), $keyword), 0, "track url error!");
+		
+		$this->url($record_url);
+		#click 'share'
+		parent::player('share');
+		parent::screenshot( __DIR__.'/report/'.'player_share_click'.'-'.time(). '.png');
+
+	}
+/*
 	public function testPlayer() {
 
 		$this->url($this->websiteUrl);
@@ -377,10 +529,10 @@ class AirMuzikTest extends AirMuzikComponent {
 		#click 'track' and go to track profile
 		$keyword = parent::searchOperation('track');
 		$this->assertEquals(strpos($this->url(), $keyword), 0, "track url error!");
-		/*
-		parent::trackProfile('member');
-		$this->assertEquals(strpos($this->url(), $this->memberUrl), 0, "member url error!");
-		*/
+		
+	#	parent::trackProfile('member');
+	#	$this->assertEquals(strpos($this->url(), $this->memberUrl), 0, "member url error!");
+		
 		$listNum = parent::countMemberTrackList();
 		$trackNum = parent::selectMemberTrackList($listNum, 1);
 		
@@ -388,7 +540,7 @@ class AirMuzikTest extends AirMuzikComponent {
 		parent::memberTracksOperation('share');
 		
 	}
-
+*/
 }
 
 ?>
