@@ -13,5 +13,5 @@ else
 fi
 
 cd ./airmuzik-test
-./phpunit/vendor/bin/phpunit --log-json ./report/report.json PHPUNIT ./airmuziktest.php host $host port $port
+./phpunit-selenium/vendor/bin/phpunit --log-json ./report/report.json PHPUNIT ./airmuziktest.php host $host port $port
 
