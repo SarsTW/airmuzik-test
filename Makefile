@@ -103,14 +103,14 @@ endif
 
 run_selenium: run_hub
 
-ifneq "$(shell sudo docker inspect '$(NODE_CHROME)' | grep 'Image' | grep '$(NAME_SELENIUM)/node-chrome:$(VERSION)')" ""
+ifneq "$(shell sudo docker inspect '$(NODE_CHROME_DEBUG)' | grep 'Image' | grep '$(NAME_SELENIUM)/node-chrome-debug:$(VERSION)')" ""
 
 	@echo chrome node container exists, check container status
 
-ifneq "$(shell sudo docker inspect '$(NODE_CHROME)' | grep 'Running' | grep 'false')" ""
+ifneq "$(shell sudo docker inspect '$(NODE_CHROME_DEBUG)' | grep 'Running' | grep 'false')" ""
 
 	@echo chrome node container exited, restarted chrome node
-	@sudo docker restart $(NODE_CHROME)
+	@sudo docker restart $(NODE_CHROME_DEBUG)
 
 else
 
@@ -121,7 +121,7 @@ endif
 else
 
 	@echo chrome node container does not exist, starts chrome node
-	@sudo docker run -d --link $(HUB_NAME):hub --name $(NODE_CHROME) $(NAME_SELENIUM)/node-chrome:$(VERSION)
+	@sudo docker run -d --link $(HUB_NAME):hub --name $(NODE_CHROME_DEBUG) $(NAME_SELENIUM)/node-chrome-debug:$(VERSION)
 
 endif
 

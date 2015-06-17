@@ -81,7 +81,6 @@ class AirMuzikTest extends AirMuzikComponent {
 		parent::menu('HomepagePlayList');
 		parent::wait(1);
 
-
 		$window = $this->windowHandles();
 		$this->windows[0]['id'] = $window[0];
 		$this->windows[1]['id'] = $window[1];
