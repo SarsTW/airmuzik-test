@@ -48,26 +48,28 @@ class AirMuzikTest extends AirMuzikComponent {
 
 	protected function setUp() {
 
-		parent::elementSetup();
-		$this->setHostAndPortByUser();
-		$this->setBrowserUrl($this->websiteUrl);
+		parent::elementSetUp();
+        //$this->setHostAndPortByUser();
+        $this->setBrowserUrl($this->websiteUrl);
 	}
 
-	public function setHostAndPortByUser() {
+    public function setHostAndPortByUser() {
 
-                global $argv, $argc;
+        global $argv, $argc;
 
-                $count = 0;
-                foreach ($argv as $value) {
-                        $count += 1;
-                        if(strcmp($value, "--host_ip_user") === 0){
-                                $this->setHost($argv[$count]);
-                        }
-                        if(strcmp($value, "--host_port_user") === 0){
-                                $this->setPort((int)$argv[$count]);
-                        }
-                }
+        $count = 0;
+        foreach ($argv as $value) {
+            $count += 1;
+            if(strcmp($value, "host") === 0){
+                $this->setHost($argv[$count]);
+            }
+            if(strcmp($value, "port") === 0){
+                $this->setPort((int)$argv[$count]);
+            }
+        }
+        
     }
+
 
 
 	public function testTrackProfile() {
@@ -334,7 +336,7 @@ class AirMuzikTest extends AirMuzikComponent {
 		$this->window($this->windows[1]['id']);
 		$this->assertEquals(strpos($this->url(), $keyword), 0, "track url error!");
 		
-		$this->window($this->window[2]['id']));
+		$this->window($this->window[2]['id']);
 
 		$this->url($record_url);
 
