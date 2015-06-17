@@ -49,9 +49,25 @@ class AirMuzikTest extends AirMuzikComponent {
 	protected function setUp() {
 
 		parent::elementSetup();
+		$this->setHostAndPortByUser();
 		$this->setBrowserUrl($this->websiteUrl);
 	}
 
+	public function setHostAndPortByUser() {
+
+                global $argv, $argc;
+
+                $count = 0;
+                foreach ($argv as $value) {
+                        $count += 1;
+                        if(strcmp($value, "--host_ip_user") === 0){
+                                $this->setHost($argv[$count]);
+                        }
+                        if(strcmp($value, "--host_port_user") === 0){
+                                $this->setPort((int)$argv[$count]);
+                        }
+                }
+    }
 
 
 	public function testTrackProfile() {
