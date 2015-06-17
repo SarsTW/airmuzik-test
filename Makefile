@@ -5,8 +5,8 @@ NAME_SELENIUM := selenium
 VERSION := 2.45.0
 GIT_NAME := airmuzik-test
 GIT_URL := https://github.com/gosick/$(GIT_NAME).git
-REPOSITORY_PATH := /home/testing/$(GIT_NAME)
-TEST_IN_DOCKER_PATH := /$(GIT_NAME)
+REPOSITORY_PATH := /home/testing/airmuzik-test
+TEST_IN_DOCKER_PATH := /airmuzik-test
 HOST := $(shell ifconfig | grep -A 1 'eth0' | tail -1 | cut -d ':' -f 2 | cut -d ' ' -f 1)
 PORT := 4444
 

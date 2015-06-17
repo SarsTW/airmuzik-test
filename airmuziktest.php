@@ -49,7 +49,7 @@ class AirMuzikTest extends AirMuzikComponent {
 	protected function setUp() {
 
 		parent::elementSetUp();
-        //$this->setHostAndPortByUser();
+        $this->setHostAndPortByUser();
         $this->setBrowserUrl($this->websiteUrl);
 	}
 
@@ -336,7 +336,7 @@ class AirMuzikTest extends AirMuzikComponent {
 		$this->window($this->windows[1]['id']);
 		$this->assertEquals(strpos($this->url(), $keyword), 0, "track url error!");
 		
-		$this->window($this->window[2]['id']);
+		$this->window($this->windows[2]['id']);
 
 		$this->url($record_url);
 
@@ -378,10 +378,10 @@ class AirMuzikTest extends AirMuzikComponent {
 		#click 'track' and go to track profile
 		$keyword = parent::searchOperation('track');
 		$this->assertEquals(strpos($this->url(), $keyword), 0, "track url error!");
-
+		/*
 		parent::trackProfile('member');
 		$this->assertEquals(strpos($this->url(), $this->memberUrl), 0, "member url error!");
-
+		*/
 		$listNum = parent::countMemberTrackList();
 		$trackNum = parent::selectMemberTrackList($listNum, 1);
 		

@@ -105,12 +105,12 @@ class AirMuzikComponent extends PHPUnit_Extensions_Selenium2TestCase {
 
 				$this->byCssSelector('div.menu > div > div > a')->click();
 				break;
-
+			/*
 			case 'member':
 
 				$this->byCssSelector('div.viewport > ul > li:nth-child('.$select.') > a')->click();
 				break;
-			/*
+			
 			case 'comment':
 
 				$this->assertEquals('true', $this->checklogin, "member does not login, can't post a comment");
