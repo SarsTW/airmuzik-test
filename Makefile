@@ -2,15 +2,14 @@ HUB_NAME := selenium-hub
 NODE_CHROME := chrome-node
 NODE_CHROME_DEBUG := chrome-node-debug
 NAME_SELENIUM := selenium
-VERSION := 2.45.0
+VERSION := 2.46.0
 GIT_NAME := airmuzik-test
 GIT_URL := https://github.com/gosick/$(GIT_NAME).git
 REPOSITORY_PATH := /home/testing/airmuzik-test
 TEST_IN_DOCKER_PATH := /airmuzik-test
-HOST := $(shell ifconfig | grep -A 1 'eth0' | tail -1 | cut -d ':' -f 2 | cut -d ' ' -f 1)
+#HOST := $(shell ifconfig | grep -A 1 'eth0' | tail -1 | cut -d ':' -f 2 | cut -d ' ' -f 1)
+HOST := $(shell ifconfig | grep -A 1 'eth0' | head -2 | cut -d ':' -f 2 | cut -d ' ' -f 1 | tail -1)
 PORT := 4444
-
-
 
 all:
 
@@ -128,13 +127,11 @@ endif
 
 build:
 
-ifeq "$(shell sudo docker inspect '$(test)' | grep 'Image')" ""
+ifeq "$(shell sudo docker inspect '$(product)' | grep 'Image')" ""
 
-	@cd $(GIT_NAME) && sudo docker build -t $(test) .
+	@cd $(GIT_NAME)/$(product) && sudo docker build -t $(product) .
 
 endif
-
-
 
 pull_test_from_git:
 
@@ -144,7 +141,7 @@ pull_test_from_git:
 
 test:
 
-ifneq "$(shell sudo docker inspect '$(test)' | grep 'Image' | grep '$(test)')" ""
+ifneq "$(shell sudo docker inspect '$(test)' | grep 'Image' | grep '$(product)')" ""
 
 	@echo $(test) container exist, check container status
 
@@ -162,7 +159,8 @@ endif
 else
 
 	@echo $(test) container does not exist, starts $(test)
-	@sudo docker run -d -v $(REPOSITORY_PATH):$(TEST_IN_DOCKER_PATH) -e host=$(HOST) -e port=$(PORT) --name $(test) $(test)
+	#@sudo docker run -d -v $(REPOSITORY_PATH):$(TEST_IN_DOCKER_PATH) -e host=$(HOST) -e port=$(PORT) --name $(test) $(product)
+	@sudo docker run -i -t -v $(REPOSITORY_PATH):$(TEST_IN_DOCKER_PATH) -e host=$(HOST) -e port=$(PORT) --name $(test) $(product) /bin/bash
 
 endif
 
