@@ -267,6 +267,15 @@ class AirMuzikTest extends AirMuzikComponent {
 		$this->assertNotEquals($record_url, $this->url(), "url error! not player page!");
 	}
 */
+
+	public function test123() {
+
+		$this->url($this->websiteUrl);
+		parent::menu('HomepageArrow');
+		sleep(2);
+		parent::menu('HomepagePlayList');
+	}
+	/*
 	public function testPlayerVersion2() {
 
 		$this->url($this->websiteUrl);
@@ -332,6 +341,7 @@ class AirMuzikTest extends AirMuzikComponent {
 		parent::screenshot( __DIR__.'/report/'.'player_share_click'.'-'.time(). '.png');
 
 	}
+	*/
 /*
 	public function testPlayer() {
 

@@ -1,6 +1,8 @@
 HUB_NAME := selenium-hub
 NODE_CHROME := chrome-node
 NODE_CHROME_DEBUG := chrome-node-debug
+NODE_FIREFOX := firefox-node
+NODE_FIREFOX_DEBUG := firefox-node-debug
 NAME_SELENIUM := selenium
 VERSION := 2.46.0
 GIT_NAME := airmuzik-test
@@ -13,20 +15,21 @@ PORT := 4444
 
 all:
 
+	
 	@echo -------------------------------------------------------------------------------
 	@echo -- usage:
 	@echo --
 	@echo --
 	@echo \* make install
 	@echo \*  =====\> checking docker status, pulls selenium images,
-	@echo \*  =====\> pulls test from git, runs selenium hub and chrome node
+	@echo \*  =====\> pulls test from git, runs selenium hub, chrome debug, firefox debug node
 	@echo -------------------------------------------------------------------------------
 
-	@echo \*  make build test=[test name] ex: make build test=air
+	@echo \*  make build product=[product image tag name] ex: make build product=air
 	@echo \*  =====\> builds test from git folder to docker images
 	@echo -------------------------------------------------------------------------------
 
-	@echo \*  make test test=[test name] ex: make test test=air
+	@echo \*  make test product=[product image tag name] test=[test name]ex: make test product=air test=air1
 	@echo \*  =====\> runs test , if does not exist test images, do nothing
 	@echo -------------------------------------------------------------------------------
 
@@ -39,7 +42,7 @@ all:
 	@echo \*  =====\> checks hub container existence, and run or restart hub
 	@echo \*
 	@echo \*  run_selenium:
-	@echo \*  =====\> will use run_hub and then check node to run or restart
+	@echo \*  =====\> will check run_hub and then check node status to run or restart
 	@echo \*
 	@echo \*  pull_test_from_git:
 	@echo \*  =====\> git clone the test, see GIT_NAME and GIT_URL
@@ -102,30 +105,52 @@ endif
 
 run_selenium: run_hub
 
-ifneq "$(shell sudo docker inspect '$(NODE_CHROME)' | grep 'Image' | grep '$(NAME_SELENIUM)/node-chrome:$(VERSION)')" ""
+ifneq "$(shell sudo docker inspect '$(NODE_CHROME_DEBUG)' | grep 'Image' | grep '$(NAME_SELENIUM)/node-chrome-debug:$(VERSION)')" ""
 
-	@echo chrome node container exists, check container status
+	@echo chrome debug node container exists, check container status
 
-ifneq "$(shell sudo docker inspect '$(NODE_CHROME)' | grep 'Running' | grep 'false')" ""
+ifneq "$(shell sudo docker inspect '$(NODE_CHROME_DEBUG)' | grep 'Running' | grep 'false')" ""
 
-	@echo chrome node container exited, restarted chrome node
-	@sudo docker restart $(NODE_CHROME)
+	@echo chrome debug node container exited, restarted chrome debug node
+	@sudo docker restart $(NODE_CHROME_DEBUG)
 
 else
 
-	@echo chrome node container is running
+	@echo chrome debug node container is running
 
 endif
 
 else
 
-	@echo chrome node container does not exist, starts chrome node
-	@sudo docker run -d --link $(HUB_NAME):hub --name $(NODE_CHROME) $(NAME_SELENIUM)/node-chrome:$(VERSION)
+	@echo chrome debug node container does not exist, starts chrome debug node
+	@sudo docker run -d --link $(HUB_NAME):hub --name $(NODE_CHROME_DEBUG) $(NAME_SELENIUM)/node-chrome-debug:$(VERSION)
 
 endif
 
+ifneq "$(shell sudo docker inspect '$(NODE_FIREFOX_DEBUG)' | grep 'Image' | grep '$(NAME_SELENIUM)/node-firefox-debug:$(VERSION)')" ""
+
+	@echo firefox debug node container exists, check container status
+
+ifneq "$(shell sudo docker inspect '$(NODE_FIREFOX_DEBUG)' | grep 'Running' | grep 'false')" ""
+
+	@echo firefox debug node container exited, restarted firefox debug node
+	@sudo docker restart $(NODE_FIREFOX_DEBUG)
+
+else
+
+	@echo firefox debug node container is running
+
+endif
+
+else
+	
+	@echo firefox debug node container does not exist, starts firefox debug node
+	@sudo docker run -d --link $(HUB_NAME):hub --name $(NODE_FIREFOX_DEBUG) $(NAME_SELENIUM)/node-firefox-debug:$(VERSION)
+
+endif
 
 build:
+
 
 ifeq "$(shell sudo docker inspect '$(product)' | grep 'Image')" ""
 
@@ -135,11 +160,12 @@ endif
 
 pull_test_from_git:
 
+
 	@echo pull test from $(GIT_URL)
 	@-git clone $(GIT_URL)
 
+test: run_selenium
 
-test:
 
 ifneq "$(shell sudo docker inspect '$(test)' | grep 'Image' | grep '$(product)')" ""
 
@@ -159,37 +185,51 @@ endif
 else
 
 	@echo $(test) container does not exist, starts $(test)
-	#@sudo docker run -d -v $(REPOSITORY_PATH):$(TEST_IN_DOCKER_PATH) -e host=$(HOST) -e port=$(PORT) --name $(test) $(product)
+	@#@sudo docker run -d -v $(REPOSITORY_PATH):$(TEST_IN_DOCKER_PATH) -e host=$(HOST) -e port=$(PORT) --name $(test) $(product)
 	@sudo docker run -i -t -v $(REPOSITORY_PATH):$(TEST_IN_DOCKER_PATH) -e host=$(HOST) -e port=$(PORT) --name $(test) $(product) /bin/bash
 
 endif
 
-
 run_node_chrome_debug:
+
 
 	@-sudo docker run -d -P --link $(HUB_NAME):hub --name $(NODE_CHROME_DEBUG) $(NAME_SELENIUM)/node-chrome-debug:$(VERSION)
 
+run_node_firefox_debug:
 
-pull_selenium: hub node_chrome node_chrome_debug
 
+	@-sudo docker run -d -P --link $(HUB_NAME):hub --name $(NODE_FIREFOX_DEBUG) $(NAME_SELENIUM)/node-firefox-debug:$(VERSION)
+
+pull_selenium: hub node_chrome node_chrome_debug node_firefox node_firefox_debug
 
 
 hub:
 
-	@sudo docker pull $(NAME_SELENIUM)/hub:$(VERSION)
 
+	@sudo docker pull $(NAME_SELENIUM)/hub:$(VERSION)
 
 node_chrome:
 
+
 	@sudo docker pull $(NAME_SELENIUM)/node-chrome:$(VERSION)
 
+node_firefox:
+
+	
+	@sudo docker pull $(NAME_SELENIUM)/node-firefox:$(VERSION)
 
 node_chrome_debug:
 
+
 	@sudo docker pull $(NAME_SELENIUM)/node-chrome-debug:$(VERSION)
 
+node_firefox_debug:
+
+	
+	@sudo docker pull $(NAME_SELENIUM)/node-firefox-debug:$(VERSION)
 
 docker_uninstall:
+
 
 	@sudo apt-get autoremove -y docker.io
 

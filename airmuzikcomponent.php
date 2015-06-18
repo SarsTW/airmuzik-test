@@ -32,8 +32,10 @@ class AirMuzikComponent extends PHPUnit_Extensions_Selenium2TestCase {
 
 			case 'HomepagePlayList':
 				//festival list
-				$keyword = $this->byCssSelector('li.scenario-list.scenario-list-wide.scenario-list-situation > ul > li:nth-child(1) > a')->attribute('href');
-				$this->byCssSelector('li.scenario-list.scenario-list-wide.scenario-list-situation > ul > li:nth-child(1) > a')->click();
+				$this->byXPath('//li[@class="scenario-list scenario-list-wide scenario-list-situation"]/ul/li[1]/a')->click();
+				sleep(10);
+				//$keyword = $this->byCssSelector('li.scenario-list.scenario-list-wide.scenario-list-situation > ul > li:nth-child(1) > a')->attribute('href');
+				//$this->byCssSelector('li.scenario-list.scenario-list-wide.scenario-list-situation > ul > li:nth-child(1) > a')->click();
 				break;
 
 			case 'BusinessPlayList':
