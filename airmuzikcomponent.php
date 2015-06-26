@@ -6,6 +6,8 @@ class AirMuzikComponent extends PHPUnit_Extensions_Selenium2TestCase {
 	protected $checklogin;
 	protected $windowChange;
 
+	const CONNECT_TIMEOUT_MS = 500;
+
 	public function elementSetup() {
 		$this->trackAmountFlag = "true";
 		$this->checklogin = "false";
@@ -190,63 +192,6 @@ class AirMuzikComponent extends PHPUnit_Extensions_Selenium2TestCase {
 		return $keyword;
 	}
 
-
-
-	public function memberPlayListOperation($option) {
-
-		#need to check if the list null
-		#need to check if the list has no tracks
-		#need to check member login
-		switch ($option) {
-
-			case 'playall':
-				
-				break;
-			
-			case 'sharelist':
-
-				break;
-
-			case 'edit':
-
-				break;
-
-			case 'deletelist':
-
-				break;
-
-			case 'deletesong':
-
-				break;
-
-			case 'play':
-
-				break;
-
-			case 'add':
-
-				break;
-
-			case 'composer':
-
-				break;
-
-			case 'track':
-
-				break;
-
-			case 'artist':
-
-				break;
-
-			case 'share':
-
-				break;
-			default:
-				break;
-		}
-	}
-
 	public function player($option) {//now use track 1 for test
 
 		$keyword = '';
@@ -363,39 +308,58 @@ class AirMuzikComponent extends PHPUnit_Extensions_Selenium2TestCase {
 
 			case 'add':
 
-				break;
-/*
-			case 'add':
+				$this->clickmore();
 
-				$this->byCssSelector('div.tbody > div:nth-child(2) > div.td.time > a.icon.icon-more.js-playlist-table-more')->click();
-				$this->byCssSelector('div.tbody > div:nth-child(2) > div.td.time > a.icon.icon-add.js-playlist-table-add')->click();
+				$this->moveto($this->byCssSelector('div.tbody > div:nth-child(2) > div.td.time > a.icon.icon-add'));
+				$this->byCssSelector('div.tbody > div:nth-child(2) > div.td.time > a.icon.icon-add')->click();
+
+				$this->clickmore();
 				break;
 
 			case 'share':
 
-				$this->byCssSelector('div.tbody > div:nth-child(2) > div:nth-child(6) > a.icon.icon-more.js-playlist-table-more')->click();
-				$this->byCssSelector('div.tbody > div:nth-child(2) > div:nth-child(6) > a.icon.icon-add.js-playlist-table-add')->click();
+				$this->clickmore();
+
+				$this->moveto($this->byCssSelector('div.tbody > div:nth-child(2) > div.td.action > a.link.js-playlist-share'));
+				$this->byCssSelector('div.tbody > div:nth-child(2) > div.td.action > a.link.js-playlist-share')->click();
+
+				//need to add close pop-up list
+
+				$this->clickmore();
 				break;
 
 			case 'like':
 
-				$this->byCssSelector('div.tbody > div:nth-child(2) > div:nth-child(6) > a.icon.icon-more.js-playlist-table-more')->click();
-				sleep(1);
-				$this->byCssSelector('div.tbody > div:nth-child(2) > div:nth-child(7) > a:nth-child(1)')->click();
+				$this->clickmore();
+
+				$this->moveto($this->byCssSelector('div.tbody > div:nth-child(2) > div.td.action > a.link.js-playlist-like'));
+				$this->byCssSelector('div.tbody > div:nth-child(2) > div.td.action > a.link.js-playlist-like')->click();
+
+				$this->clickmore();
 				break;
 
 			case 'comment':
 
-				$this->byCssSelector('div.tbody > div:nth-child(2) > div:nth-child(6) > a.icon.icon-more.js-playlist-table-more')->click();
-				sleep(1);
-				$this->byCssSelector('div.tbody > div:nth-child(2) > div:nth-child(7) > a:nth-child(2)')->click();
+				$this->clickmore();
+
+				$this->moveto($this->byCssSelector('div.tbody > div:nth-child(2) > div.td.action > a:nth-child(3)'));
+				$this->byCssSelector('div.tbody > div:nth-child(2) > div.td.action > a:nth-child(3)')->click();
+
+				$this->clickmore();
 				break;
 
-*/
+
 			default:
 				break;
 		}
+
 		return $keyword;
+	}
+
+	public function clickmore() {
+
+		$this->moveto($this->byCssSelector('div.tbody > div:nth-child(2) > div.td.time > a.icon.icon-more.js-playlist-table-more'));
+		$this->byCssSelector('div.tbody > div:nth-child(2) > div.td.time > a.icon.icon-more.js-playlist-table-more')->click();
 	}
 
 	public function trackcontrolboardRWD($option) {
@@ -558,6 +522,58 @@ class AirMuzikComponent extends PHPUnit_Extensions_Selenium2TestCase {
 		
 		return $tracks;
 	}
+
+	public function responseCode($timeout_in_ms, $url) {
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT_MS, self::CONNECT_TIMEOUT_MS);
+        // There is a PHP bug in some versions which didn't define the constant.
+        curl_setopt(
+            $ch,
+            156, // CURLOPT_CONNECTTIMEOUT_MS
+            self::CONNECT_TIMEOUT_MS
+        );
+
+        $code = null;
+
+        try {
+          curl_exec($ch);
+          $info = curl_getinfo($ch);
+          $code = $info['http_code'];
+        }
+        catch (Exception $e) {}
+
+        curl_close($ch);
+        return $code;
+    }
+
+    public function getUrlList($url) {
+
+        $page = file_get_contents($url);
+
+        mb_convert_encoding($page, 'UTF-8');
+        mb_regex_encoding('UTF-8');
+        
+        preg_match_all("/(http|https|ftp):\/\/[^<>[:space:]]+[[:alnum:]#?\/&=+%_]/", $page, $match);
+        $list = $match[0];
+
+        $recordList = array();
+
+        foreach ($list as $value) {
+
+        	$requestcode = strval($this->responseCode(10000, $value));
+        	
+        	if((strpos($requestcode, "4", 0) === 0) || (strpos($requestcode, "5", 0) === 0)) {
+
+        		$temp = array("responseCode" => $requestcode, "url" => $value);
+        		array_push($recordList, $temp);
+        	}
+        }
+        
+        return $recordList;
+    }
 
 	public function memberTracksOperation($option) {
 

@@ -78,7 +78,7 @@ class AirMuzikTest extends AirMuzikComponent {
     }
 
 
-/*
+
 	public function testTrackProfilewithoutMemberLogin() {
 
 		$this->url($this->websiteUrl);
@@ -186,7 +186,7 @@ class AirMuzikTest extends AirMuzikComponent {
 
 		$this->assertNotEquals($record_url, $this->url(), "url error! not player page!");
 	}
-*/
+
 
 	public function testPlayerwithoutMemberLogin() {
 
@@ -375,9 +375,39 @@ class AirMuzikTest extends AirMuzikComponent {
 			parent::scrollView(100);
 		}
 
+		
+		parent::playerRWD('add');
+
+		sleep(5);
+
+		#parent::playerRWD('share');
+
+		#sleep(5);
+
+		#parent::playerRWD('like');
+		#sleep(4);
+
+		#parent::playerRWD('comment');
+		#sleep(4);
+
 		#click 'play'
 		parent::playerRWD('play');
 		sleep(4);
+
+
+	}
+
+
+	public function teststatuscode() {
+
+		#example for test statuscode 404
+		$this->url('http://dev.airmuzik.com:5636/tw/player/playlist/r1g692-Festival/8lze1w-Khachaturian-Aram-Il39yich-Gayaneh-Lezghinka');
+		$statuscode = parent::getUrlList($this->websiteUrl);
+		if(!empty($statuscode)) {
+
+			var_dump($statuscode);
+		}
+
 	}
 
 }
