@@ -4,10 +4,12 @@ class AirMuzikComponent extends PHPUnit_Extensions_Selenium2TestCase {
 
 	protected $trackAmountFlag;
 	protected $checklogin;
+	protected $windowChange;
 
 	public function elementSetup() {
 		$this->trackAmountFlag = "true";
 		$this->checklogin = "false";
+		$this->windowChange = "false";
 	}
 
 	public function wait($second) {
@@ -32,15 +34,16 @@ class AirMuzikComponent extends PHPUnit_Extensions_Selenium2TestCase {
 
 			case 'HomepagePlayList':
 				//festival list
-				$this->byXPath('//li[@class="scenario-list scenario-list-wide scenario-list-situation"]/ul/li[1]/a')->click();
-				sleep(10);
-				//$keyword = $this->byCssSelector('li.scenario-list.scenario-list-wide.scenario-list-situation > ul > li:nth-child(1) > a')->attribute('href');
-				//$this->byCssSelector('li.scenario-list.scenario-list-wide.scenario-list-situation > ul > li:nth-child(1) > a')->click();
+				
+				$this->byCssSelector('li.scenario-list.scenario-list-wide.scenario-list-situation > ul > li:nth-child(1) > a')->click();
 				break;
 
 			case 'BusinessPlayList':
 				//relax list
+
 				$this->byCssSelector('li.scenario-list.scenario-list-feature > ul > li:nth-child(1) > a')->click();
+				break;
+
 			case 'GoforPlaying':
 
 				$keyword = $this->homepagePlayList($option);
@@ -78,16 +81,27 @@ class AirMuzikComponent extends PHPUnit_Extensions_Selenium2TestCase {
 	public function homepagePlayList($option) {
 
 		$keyword = '';
-		if($option == 'GoforPlaying') {
 
-			$keyword = $this->byCssSelector('a.play.button-primary')->attribute('href');
-			$this->byCssSelector('a.play.button-primary')->click();
+		if($option === 'GoforPlaying') {
+
+			if($this->windowChange === "false") {
+
+				$keyword = $this->byCssSelector('form > a.play.button-primary')->attribute('href');
+				$this->byCssSelector('form > a.play.button-primary')->click();
+			}
+			else {
+
+				$this->moveto($this->byCssSelector('a.scenario-playlist'));
+				$this->byCssSelector('a.scenario-playlist')->click();
+			}
 		}
-		else if($option == 'GotoPlayListTrackProfile') {
+		else if($option === 'GotoPlayListTrackProfile') {
 
+			//first track
 			$this->byCssSelector('div.playlist > ul > li:nth-child(1) > a')->click();
 		}
 		return $keyword;
+
 	}
 
 	public function trackProfile($option) {
@@ -98,8 +112,8 @@ class AirMuzikComponent extends PHPUnit_Extensions_Selenium2TestCase {
 
 			case 'play':
 
-				$keyword = $this->byCssSelector('div.menu > div > a:nth-child(1)')->attribute('href');
-				$this->byCssSelector('div.menu > div > a:nth-child(1)')->click();
+				$keyword = $this->byCssSelector('div.menu > div.control > a.play.button-primary')->attribute('href');
+				$this->byCssSelector('div.menu > div.control > a.play.button-primary')->click();
 				break;
 			
 			case 'like':
@@ -109,25 +123,16 @@ class AirMuzikComponent extends PHPUnit_Extensions_Selenium2TestCase {
 
 			case 'add':
 
-				$this->byCssSelector('div.menu > div > a:nth-child(3)')->click();
+				$this->byCssSelector('div.menu > div.control > a.playlist-add')->click();
 				break;
 
 			case 'share':
 
-				$this->byCssSelector('div.menu > div > div > a')->click();
-				break;
-			/*
-			case 'member':
-
-				$this->byCssSelector('div.viewport > ul > li:nth-child('.$select.') > a')->click();
+				$this->byCssSelector('div.menu > div.control > div > a')->click();
+				//click copy
+				$this->byCssSelector('div.playlist-share.js-playlist-share-panel.playlist-share-active > div.list > form.form > button')->click();
 				break;
 			
-			case 'comment':
-
-				$this->assertEquals('true', $this->checklogin, "member does not login, can't post a comment");
-				$this->commentPost($text);
-				break;
-			*/
 			default:
 				break;
 		}
@@ -143,44 +148,49 @@ class AirMuzikComponent extends PHPUnit_Extensions_Selenium2TestCase {
 
 			case 'play':
 
-				$keyword = $this->byCssSelector('div.playlist-table > div:nth-child(1) > div:nth-child(2) > div:nth-child(2) > div:nth-child(1) > a:nth-child(1)')->attribute('href');
-				$this->byCssSelector('div.playlist-table > div:nth-child(1) > div:nth-child(2) > div:nth-child(2) > div:nth-child(1) > a:nth-child(1)')->click();
+				$keyword = $this->byCssSelector('div.playlist-table > div.table > div.tbody > div:nth-child(2) > div:nth-child(1) > a:nth-child(1)')->attribute('href');
+				$this->byCssSelector('div.playlist-table > div.table > div.tbody > div:nth-child(2) > div:nth-child(1) > a:nth-child(1)')->click();
 				break;
 
 			case 'add':
 
-				$this->byCssSelector('div.playlist-table > div:nth-child(1) > div:nth-child(2) > div:nth-child(2) > div:nth-child(1) > a:nth-child(2)')->click();
+				$this->byCssSelector('div.playlist-table > div.table > div.tbody > div:nth-child(2) > div:nth-child(1) > a:nth-child(2)')->click();
 				break;
 
 			case 'composer':
 
-				$keyword = $this->byCssSelector('div.playlist-table > div:nth-child(1) > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > a')->attribute('title');
-				$this->byCssSelector('div.playlist-table > div:nth-child(1) > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) > a')->click();
+				$keyword = $this->byCssSelector('div.playlist-table > div.table > div.tbody > div:nth-child(2) > div:nth-child(2) > a')->attribute('title');
+				$this->byCssSelector('div.playlist-table > div.table > div.tbody > div:nth-child(2) > div:nth-child(2) > a')->click();
 				break;
 
 			case 'track':
 
-				$keyword = $this->byCssSelector('div.playlist-table > div:nth-child(1) > div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > a')->attribute('href');
-				$this->byCssSelector('div.playlist-table > div:nth-child(1) > div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > a')->click();
+				$keyword = $this->byCssSelector('div.playlist-table > div.table > div.tbody > div:nth-child(2) > div:nth-child(3) > a')->attribute('href');
+				$this->byCssSelector('div.playlist-table > div.table > div.tbody > div:nth-child(2) > div:nth-child(3) > a')->click();
 				break;
 
 			case 'artist':
 
-				$keyword = $this->byCssSelector('div.playlist-table > div:nth-child(1) > div:nth-child(2) > div:nth-child(2) > div:nth-child(4) > a')->attribute('title');
-				$this->byCssSelector('div.playlist-table > div:nth-child(1) > div:nth-child(2) > div:nth-child(2) > div:nth-child(4) > a')->click();
+				$keyword = $this->byCssSelector('div.playlist-table > div.table > div.tbody > div:nth-child(2) > div:nth-child(4) > a')->attribute('title');
+				$this->byCssSelector('div.playlist-table > div.table > div.tbody > div:nth-child(2) > div:nth-child(4) > a')->click();
 				break;
-
+			/*
 			case 'share':
 
-				$this->byCssSelector('div.playlist-table > div:nth-child(1) > div:nth-child(2) > div:nth-child(2) > div:nth-child(6) > div > a')->click();
-				break;
+				$this->byCssSelector('div.playlist-table > div.table > div.tbody > div:nth-child(2) > div:nth-child(6) > div > a')->click();
+				//click copy
+				$this->byCssSelector('div.playlist-table > div.table > div.tbody > div:nth-child(2) > div:nth-child(6) > div > div.list > form > button')->click();
 
+				break;
+			*/
 			default:
 				break;
 		}
 
 		return $keyword;
 	}
+
+
 
 	public function memberPlayListOperation($option) {
 
@@ -236,62 +246,55 @@ class AirMuzikComponent extends PHPUnit_Extensions_Selenium2TestCase {
 				break;
 		}
 	}
-/*
-	public function commentPost($text) {
-		
-		$this->byCssSelector('textarea.input')->value($text);
-		$this->byCssSelector('div.clearfix > button')->click();
-	}
-*/
 
-	public function player($option) {//test track 2
+	public function player($option) {//now use track 1 for test
 
 		$keyword = '';
 		switch ($option) {
 
 			case 'play':
 				
-				$this->byCssSelector('div.tbody > div:nth-child(2) > div:nth-child(1) > a:nth-child(1)')->click();
+				$this->byCssSelector('div.tbody > div:nth-child(1) > div:nth-child(1) > a:nth-child(1)')->click();
 				break;
 
 			case 'add':
-			
-				$this->byCssSelector('div.tbody > div:nth-child(2) > div:nth-child(1) > a:nth-child(2)')->click();
+				
+				$this->byCssSelector('div.tbody > div:nth-child(1) > div:nth-child(1) > a.icon.icon-add')->click();
 				break;
 
 			case 'composer':
 
-				$keyword = $this->byCssSelector('div.tbody > div:nth-child(2) > div:nth-child(2) > a')->attribute('title');
-				$this->byCssSelector('div.tbody > div:nth-child(2) > div:nth-child(2) > a')->click();
+				$keyword = $this->byCssSelector('div.tbody > div:nth-child(1) > div:nth-child(2) > a')->attribute('title');
+				$this->byCssSelector('div.tbody > div:nth-child(1) > div:nth-child(2) > a')->click();
 				break;
 
 			case 'track':
 
-				$keyword = $this->byCssSelector('div.tbody > div:nth-child(2) > div:nth-child(3) > a')->attribute('href');
-				$this->byCssSelector('div.tbody > div:nth-child(2) > div:nth-child(3) > a')->click();
+				$keyword = $this->byCssSelector('div.tbody > div:nth-child(1) > div:nth-child(3) > a')->attribute('href');
+				$this->byCssSelector('div.tbody > div:nth-child(1) > div:nth-child(3) > a')->click();
 				break;
 
 			case 'artist':
 
-				$keyword = $this->byCssSelector('div.tbody > div:nth-child(2) > div:nth-child(4) > a:nth-child(1)')->attribute('title');
-				$this->byCssSelector('div.tbody > div:nth-child(2) > div:nth-child(4) > a:nth-child(1)')->click();
+				$keyword = $this->byCssSelector('div.tbody > div:nth-child(1) > div:nth-child(4) > a:nth-child(1)')->attribute('title');
+				$this->byCssSelector('div.tbody > div:nth-child(1) > div:nth-child(4) > a:nth-child(1)')->click();
 				break;
 
 			case 'share':
 
-				$this->moveto($this->byCssSelector('div.tbody > div:nth-child(2) > div:nth-child(6) > div'));
-				$this->byCssSelector('div.tbody > div:nth-child(2) > div:nth-child(6) > div > a:nth-child(1)')->click();
+				$this->byCssSelector('div.tbody > div:nth-child(1) > div:nth-child(7) > a:nth-child(1)')->click();
+				$this->byCssSelector('div.playlist-share.js-playlist-share-panel.playlist-share-active > div.list > form.form > button')->click();
 				break;
 
 			case 'like':
 
-				$this->byCssSelector('div.tbody > div:nth-child(2) > div:nth-child(7) > a:nth-child(1)')->click();
+				$this->byCssSelector('div.tbody > div:nth-child(1) > div:nth-child(7) > a:nth-child(2)')->click();
 				break;
 
 			case 'comment':
 
-				$keyword = $this->byCssSelector('div.tbody > div:nth-child(2) > div:nth-child(7) > a:nth-child(2)')->attribute('href');
-				$this->byCssSelector('div.tbody > div:nth-child(2) > div:nth-child(7) > a:nth-child(2)')->click();
+				$keyword = $this->byCssSelector('div.tbody > div:nth-child(1) > div:nth-child(7) > a:nth-child(3)')->attribute('href');
+				$this->byCssSelector('div.tbody > div:nth-child(1) > div:nth-child(7) > a:nth-child(3)')->click();
 				break;
 
 			default:
@@ -302,24 +305,64 @@ class AirMuzikComponent extends PHPUnit_Extensions_Selenium2TestCase {
 		
 	}
 
-	public function playerRWD($option) {
+	public function trackcontrolboard($option) {
+
+		$tracktime = array(
+			'progress' => '',
+			'duration' => ''
+		);
+
+		$tracktime['progress'] = $this->byCssSelector('div.player.clearfix.js-player > div.information > div.time > span.progress.js-player-progress')->text();
+		$tracktime['duration'] = $this->byCssSelector('div.player.clearfix.js-player > div.information > div.time > span.duration.js-player-duration')->text();
+
+		switch ($option) {
+
+			case 'prev':
+				
+				$this->byCssSelector('div.player.clearfix.js-player > div.control > a.button.previous.icon-back.js-player-previous')->click();
+				break;
+			
+			case 'next':
+
+				$this->byCssSelector('div.player.clearfix.js-player > div.control > a.button.next.icon-next.js-player-next')->click();
+				break;
+
+			case 'play':
+
+				$this->byCssSelector('div.player.clearfix.js-player > div.control > a.button.play.icon-play.js-player-play')->click();
+				break;
+
+			case 'pause':
+
+				$this->byCssSelector('div.player.clearfix.js-player > div.control > a.button.pause.icon-pause.js-player-pause')->click();
+				break;
+
+			default:
+				
+				break;
+		}
+
+		return $tracktime;
+	}
+
+	public function playerRWD($option) {//use track 2 for test
 
 		$keyword = '';
 		switch ($option) {
 
 			case 'play':
 
-				$this->byCssSelector('div.tbody > div:nth-child(2) > div:nth-child(1) > a:nth-child(1)')->click();
+				$this->byCssSelector('div.tbody > div:nth-child(2) > div.td.control > a.icon.icon-play')->click();
 				break;
 
 			case 'track':
 
-				$keyword = $this->byCssSelector('div.tbody > div:nth-child(2) > div:nth-child(5) > a')->attribute('href');
-				$this->byCssSelector('div.tbody > div:nth-child(2) > div:nth-child(5) > a')->click();
+				$keyword = $this->byCssSelector('div.tbody > div:nth-child(2) > div.td.details > a.link')->attribute('href');
+				$this->byCssSelector('div.tbody > div:nth-child(2) > div.td.details > a.link')->click();
 				break;
 
-			case 'more':
-				$this->byCssSelector('div.tbody > div:nth-child(2) > div:nth-child(6) > a.icon.icon-more.js-playlist-table-more')->click();
+			case 'add':
+
 				break;
 /*
 			case 'add':
@@ -355,6 +398,19 @@ class AirMuzikComponent extends PHPUnit_Extensions_Selenium2TestCase {
 		return $keyword;
 	}
 
+	public function trackcontrolboardRWD($option) {
+
+		switch ($option) {
+
+			case 'value':
+				
+				break;
+			
+			default:
+				
+				break;
+		}
+	}
 
 	public function login($account, $password) {
 
@@ -454,9 +510,9 @@ class AirMuzikComponent extends PHPUnit_Extensions_Selenium2TestCase {
 		$this->byCssSelector('div.control > form > button')->click();
 	}
 
-	public function scrollView() {
+	public function scrollView($length) {
 
-		$script = 'window.scrollBy(0, 250)';
+		$script = 'window.scrollBy(0, '.$length.')';
         $scroll = array('script' => $script, 'args' => array());        
         $this->execute($scroll);
 	}
